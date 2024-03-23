@@ -1,0 +1,23 @@
+name: 提取问题和答案
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  提取:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 提取问题和答案
+        id: extract
+        run: |
+          BODY=$(echo "${{ github.event.issue.body }}" | sed 's/^Question://')
+          QUESTION=$(echo "$BODY" | head -n 1)
+          ANSWER=$(echo "$BODY" | tail -n +2)
+          echo "::set-output name=question::$QUESTION"
+          echo "::set-output name=answer::$ANSWER"
+
+      - name: 打印问题和答案
+        run: |
+          echo "问题: ${{ steps.extract.outputs.question }}"
+          echo "答案: ${{ steps.extract.outputs.answer }}"
